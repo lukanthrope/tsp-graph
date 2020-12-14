@@ -6,10 +6,18 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  overflow: hidden;
 }
 
 .container {
   width: 50%;
+}
+
+@media(max-width: 600px) {
+  .container {
+    width: 100%;
+    margin-right: 400px;
+  }
 }
 
 .form-container {

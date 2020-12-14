@@ -56,8 +56,8 @@ function App() {
             config={myConfig}
           />
         )}
-        {minPath && <h2>Min path{minPath}</h2>}
       </div>
+      {minPath && <h2>Min path{minPath}</h2>}
       <div className="form-container">
         {
           matrix.map((r, i) => (
@@ -66,7 +66,6 @@ function App() {
                 <TextField
                   key={index}
                   value={el}
-                  id="standard-required"
                   disabled={i === index}
                   onChange={(e) => handleChange(e, i, index)}
                   />
