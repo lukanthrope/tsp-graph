@@ -31,6 +31,7 @@ const initialMatrix = [
 
 function App() { 
   const [matrix, setMatrix] = useState(initialMatrix);
+  const [initialSchema, setInitialSchema] = useState(null); 
   const [schema, setSchema] = useState(null);
   const [minPath, setMinPath] = useState(null);
 
@@ -38,6 +39,25 @@ function App() {
     const tsp = new TSP(matrix);
     setSchema(tsp.solve());
     setMinPath(tsp.path);
+
+    const newInitSchema = {
+      nodes: [],
+      links: []
+    };
+
+    for (let i = 0; i < matrix.length; i++) {
+      newInitSchema.nodes.push({ id: TSP.toString(i) });
+    }
+
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix.length; j++) {
+        if (matrix[i][j] > 0) {
+          newInitSchema.links.push({ source: TSP.toString(i), target: TSP.toString(j) });
+        }
+      }
+    }
+
+    setInitialSchema(newInitSchema);
   }, [matrix]);
 
   const handleChange = (e, i, j) => {
@@ -48,17 +68,8 @@ function App() {
 
   return (
     <div className="App">
-      <div className="container">
-        {schema && (
-          <Graph
-            id="graph-id"
-            data={schema}
-            config={myConfig}
-          />
-        )}
-      </div>
-      {minPath && <h2>Min path{minPath}</h2>}
       <div className="form-container">
+        <h2>Матриця</h2>
         {
           matrix.map((r, i) => (
             <div key={i}>
@@ -73,6 +84,28 @@ function App() {
             </div>
           ))
         }
+      </div>
+      <div className="container">
+        <section>
+          <h2>Початковий граф</h2>
+          {initialSchema && (
+            <Graph
+              id="graph-id-0"
+              data={initialSchema}
+              config={myConfig}
+            />
+          )}
+        </section>
+        <section>
+          {minPath && <h2>Мінімальний шлях = {minPath}</h2>}
+          {schema && (
+            <Graph
+              id="graph-id-1"
+              data={schema}
+              config={myConfig}
+            />
+          )}
+        </section>
       </div>
     </div>
   );

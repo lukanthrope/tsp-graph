@@ -9,20 +9,27 @@
   overflow: hidden;
 }
 
+h2 {
+  font-weight: 400;
+}
+
 .container {
-  width: 50%;
+  display: flex;
 }
 
 @media(max-width: 600px) {
   .container {
-    width: 100%;
-    margin-right: 400px;
+    flex-direction: column;
   }
 }
 
 .form-container {
   margin-top: 10px;
   margin-bottom: 40px;
+}
+
+.form-container h2 {
+  margin: 20px;
 }
 
 .form-container input {
