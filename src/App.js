@@ -35,6 +35,7 @@ function App() {
   const [initialSchema, setInitialSchema] = useState(null); 
   const [schema, setSchema] = useState(null);
   const [minPath, setMinPath] = useState(null);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     const newMatrix = [];
@@ -85,6 +86,7 @@ function App() {
     }
 
     setInitialSchema(newInitSchema);
+    setLoader(false);
   }, [matrix]);
 
   const sumMatrix = (matrix) => matrix.reduce((acc, curr) => acc + curr.reduce((a, c) => a + c, 0), 0);
@@ -94,6 +96,9 @@ function App() {
     const m = [...matrix];
     m[i][j] = Number(value) || 0;
     m[j][i] = Number(value) || 0;
+
+    setLoader(true);
+
     if (sumMatrix(m) > 0)
       setMatrix(m);
   };
@@ -140,7 +145,7 @@ function App() {
         }
         <Button disabled={matrix.length < 3} color="secondary" onClick={decreaseMatrix}>-</Button>
       </div>
-      { sumMatrix(matrix) > 0 &&
+      { sumMatrix(matrix) > 0 && !loader &&
         <div className="container">
           <section>
             <h2>Початковий граф</h2>
