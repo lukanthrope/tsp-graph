@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import TSP from './algorithm';
 
 import './App.css';
+import { Button } from '@material-ui/core';
  
 const myConfig = {
     nodeHighlightBehavior: true,
@@ -36,7 +37,22 @@ function App() {
   const [minPath, setMinPath] = useState(null);
 
   useEffect(() => {
-    const tsp = new TSP(matrix);
+    const newMatrix = [];
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix.length; j++) {
+        if (matrix[i][j] > 0) {
+          newMatrix.push(matrix[i]);
+          break;
+        }
+      }
+    }
+
+    newMatrix.forEach(arr => {
+      arr = [...arr];
+      arr.length = newMatrix.length;
+    });
+
+    const tsp = new TSP(newMatrix);
     setSchema(tsp.solve());
     setMinPath(tsp.path);
 
@@ -45,13 +61,24 @@ function App() {
       links: []
     };
 
-    for (let i = 0; i < matrix.length; i++) {
-      newInitSchema.nodes.push({ id: TSP.toString(i) });
-    }
+    const nodeIndexes = [];
+
+    for (let j = 0; j < matrix.length; j++) {
+      for (let i = 0; i < matrix.length; i++) {
+        if (matrix[i][j] > 0) {
+          nodeIndexes.push(j);
+          break;
+        }
+      }
+    }    
+
+    nodeIndexes.forEach((el) => {
+      newInitSchema.nodes.push({ id: TSP.toString(el) });
+    });
 
     for (let i = 0; i < matrix.length; i++) {
       for (let j = 0; j < matrix.length; j++) {
-        if (matrix[i][j] > 0) {
+        if (nodeIndexes.includes(i) && nodeIndexes.includes(j) && matrix[i][j] > 0) {
           newInitSchema.links.push({ source: TSP.toString(i), target: TSP.toString(j) });
         }
       }
@@ -60,16 +87,43 @@ function App() {
     setInitialSchema(newInitSchema);
   }, [matrix]);
 
+  const sumMatrix = (matrix) => matrix.reduce((acc, curr) => acc + curr.reduce((a, c) => a + c, 0), 0);
+
   const handleChange = (e, i, j) => {
+    const { value } = e.target;
     const m = [...matrix];
-    m[i][j] = Number(e.target.value);
-    setMatrix(m);
+    m[i][j] = Number(value) || 0;
+    m[j][i] = Number(value) || 0;
+    if (sumMatrix(m) > 0)
+      setMatrix(m);
+  };
+
+  const increaseMatrix = () => {
+    const newMatrix = [...matrix];
+    const len = newMatrix.length;
+    const newArr = [];
+
+    newMatrix.forEach(arr => arr.push(0));
+    for (let i = 0; i <= len; i++) {
+      newArr.push(0);
+    }
+    newMatrix.push(newArr);
+
+    setMatrix(newMatrix);
+  };
+
+  const decreaseMatrix = () => {
+    const newMatrix = [...matrix];
+    newMatrix.pop();
+    newMatrix.forEach(arr => arr.pop());
+    setMatrix(newMatrix);
   };
 
   return (
     <div className="App">
       <div className="form-container">
         <h2>Матриця</h2>
+        <Button color="primary" onClick={increaseMatrix}>+</Button>
         {
           matrix.map((r, i) => (
             <div key={i}>
@@ -84,29 +138,32 @@ function App() {
             </div>
           ))
         }
+        <Button disabled={matrix.length < 3} color="secondary" onClick={decreaseMatrix}>-</Button>
       </div>
-      <div className="container">
-        <section>
-          <h2>Початковий граф</h2>
-          {initialSchema && (
-            <Graph
-              id="graph-id-0"
-              data={initialSchema}
-              config={myConfig}
-            />
-          )}
-        </section>
-        <section>
-          {minPath && <h2>Мінімальний шлях = {minPath}</h2>}
-          {schema && (
-            <Graph
-              id="graph-id-1"
-              data={schema}
-              config={myConfig}
-            />
-          )}
-        </section>
-      </div>
+      { sumMatrix(matrix) > 0 &&
+        <div className="container">
+          <section>
+            <h2>Початковий граф</h2>
+            {initialSchema && (
+              <Graph
+                id="graph-id-0"
+                data={initialSchema}
+                config={myConfig}
+              />
+            )}
+          </section>
+          <section>
+            {minPath && <h2>Мінімальний шлях = {minPath}</h2>}
+            {schema && (
+              <Graph
+                id="graph-id-1"
+                data={schema}
+                config={myConfig}
+              />
+            )}
+          </section>
+        </div>
+      }
     </div>
   );
 }

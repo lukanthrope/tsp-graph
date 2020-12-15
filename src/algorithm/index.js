@@ -40,10 +40,12 @@ class TSP {
     });
 
     for (let i = 1; i < graph.length; i++) {
-      console.log(parent[i], " - ", i, " \t", graph[i][parent[i]]," \n");
-      this.path += graph[i][parent[i]]; 
+      if (parent[i] !== undefined && graph[i][parent[i]] !== undefined) {
+        console.log(parent[i], " - ", i, " \t", graph[i][parent[i]]," \n");
+        this.path += graph[i][parent[i]]; 
       
-      res.links.push({ source: TSP.toString(parent[i]), target: TSP.toString(i) });
+        res.links.push({ source: TSP.toString(parent[i]), target: TSP.toString(i) });
+      }
     } 
 
     return res;
